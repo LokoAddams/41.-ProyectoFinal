@@ -28,7 +28,7 @@ export const ScrollToTop = () => {
     <>
       {isVisible && (
         <button 
-          className={styles.scrollBtn} 
+          className={styles.scrollToTopBtn} 
           onClick={scrollToTop} 
           aria-label="Volver arriba"
         >
