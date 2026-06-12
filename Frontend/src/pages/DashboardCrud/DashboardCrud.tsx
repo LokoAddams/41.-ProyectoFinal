@@ -1,0 +1,346 @@
+import React, { useState, useMemo, useEffect } from 'react';
+import { api as axios } from '../../services/api';
+import { Helmet } from 'react-helmet-async';
+import styles from './DashboardCrud.module.scss';
+import { useAuth } from '../../context/AuthContext';
+import { getUserRole, logout as authLogout } from '../../utils/auth';
+import { Button } from '../../components/Button/Button';
+import { Modal } from '../../components/Modal/Modal';
+import { Input } from '../../components/Input/Input';
+import type { Product } from '../../interfaces';
+
+export const DashboardCrud = () => {
+  const { user, logout: contextLogout } = useAuth();
+  const [products, setProducts] = useState<Product[]>([]);
+  const isAdmin = getUserRole() === 'ADMIN';
+
+  useEffect(() => {
+    axios.get('/coffees')
+      .then(res => setProducts(res.data))
+      .catch(err => console.error('Error fetching coffees:', err));
+  }, []);
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Partial<Product>>({});
+  const [newIngredient, setNewIngredient] = useState('');
+  
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const categories = useMemo(() => {
+    const allIngredients = products.flatMap(p => p.ingredients || []);
+    return Array.from(new Set(allIngredients)).sort();
+  }, [products]);
+
+  const filteredProducts = useMemo(() => {
+    return products.filter(p => {
+      const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = selectedCategory ? p.ingredients.includes(selectedCategory) : true;
+      return matchesSearch && matchesCategory;
+    });
+  }, [products, searchQuery, selectedCategory]);
+
+  const searchSuggestions = useMemo(() => {
+    if (!searchQuery) return [];
+    return products.filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 3);
+  }, [products, searchQuery]);
+
+  const handleOpenModal = (product?: Product) => {
+    if (product) {
+      setEditingProduct(product);
+    } else {
+      setEditingProduct({ ingredients: [], title: '', description: '', image: '' });
+    }
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = (id: number) => {
+    if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+      axios.delete(`/coffees/${id}`)
+        .then(() => setProducts(products.filter(p => p.id !== id)))
+        .catch(err => console.error('Error deleting coffee:', err));
+    }
+  };
+
+  const handleSaveProduct = () => {
+    if (!editingProduct.title || editingProduct.title.length < 3) {
+      alert("El título debe tener al menos 3 caracteres.");
+      return;
+    }
+    if (editingProduct.id) {
+      axios.put(`/coffees/${editingProduct.id}`, editingProduct)
+        .then(res => {
+          setProducts(products.map(p => p.id === editingProduct.id ? res.data : p));
+          setIsModalOpen(false);
+        })
+        .catch(err => console.error('Error updating coffee:', err));
+    } else {
+      axios.post('/coffees', editingProduct)
+        .then(res => {
+          setProducts([...products, res.data]);
+          setIsModalOpen(false);
+        })
+        .catch(err => console.error('Error creating coffee:', err));
+    }
+  };
+
+  const handleAddIngredient = () => {
+    if (newIngredient && editingProduct.ingredients) {
+      setEditingProduct({
+        ...editingProduct,
+        ingredients: [...editingProduct.ingredients, newIngredient]
+      });
+      setNewIngredient('');
+    }
+  };
+
+  const handleRemoveIngredient = (ingToRemove: string) => {
+    if (editingProduct.ingredients) {
+      setEditingProduct({
+        ...editingProduct,
+        ingredients: editingProduct.ingredients.filter(ing => ing !== ingToRemove)
+      });
+    }
+  };
+
+  const getInitials = (name: string) => name ? name.substring(0, 2).toUpperCase() : 'U';
+
+  return (
+    <>
+      <Helmet>
+        <title>Dashboard - Artisan Roasts</title>
+      </Helmet>
+
+      <div className={styles.layout}>
+        {/* Sidebar */}
+        <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : ''}`}>
+          <div className={styles.brand}>
+            <span className="material-symbols-outlined" aria-hidden="true">coffee</span>
+            <span>Artisan Roasts</span>
+          </div>
+          <nav className={styles.nav}>
+            <a href="#" className={styles.navLinkActive} onClick={() => setIsSidebarOpen(false)}>
+              <span className="material-symbols-outlined" aria-hidden="true">dashboard</span> Dashboard
+            </a>
+            <a href="#" className={styles.navLink} onClick={() => setIsSidebarOpen(false)}>
+              <span className="material-symbols-outlined" aria-hidden="true">inventory_2</span> Inventario
+            </a>
+            <a href="#" className={styles.navLink} onClick={() => setIsSidebarOpen(false)}>
+              <span className="material-symbols-outlined" aria-hidden="true">receipt_long</span> Pedidos
+            </a>
+            <a href="#" className={styles.navLink} onClick={() => setIsSidebarOpen(false)}>
+              <span className="material-symbols-outlined" aria-hidden="true">bar_chart</span> Estadísticas
+            </a>
+            <a href="#" className={styles.navLink} onClick={() => setIsSidebarOpen(false)}>
+              <span className="material-symbols-outlined" aria-hidden="true">settings</span> Configuración
+            </a>
+          </nav>
+          <div className={styles.bottomNav}>
+            <a href="#" className={styles.navLink} style={{marginBottom: '0.5rem'}} onClick={() => setIsSidebarOpen(false)}>
+              <span className="material-symbols-outlined" aria-hidden="true">help</span> Ayuda
+            </a>
+            <button className={styles.logoutBtn} onClick={() => { authLogout(); contextLogout(); setIsSidebarOpen(false); }}>
+              <span className="material-symbols-outlined" aria-hidden="true">logout</span> Cerrar Sesión
+            </button>
+          </div>
+        </aside>
+
+        <main className={styles.mainContent}>
+          {/* Top Header */}
+          <header className={styles.header}>
+            <h1 className={styles.pageTitle}>Management</h1>
+            
+            <div className={styles.searchWrapper}>
+              <div className={styles.searchInputWrapper}>
+                <span className={`material-symbols-outlined ${styles.searchIcon}`} aria-hidden="true">search</span>
+                <input 
+                  type="text" 
+                  placeholder="Search coffee products..." 
+                  className={styles.searchInput}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setShowSuggestions(true)}
+                  onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                />
+              </div>
+              
+              {showSuggestions && searchSuggestions.length > 0 && (
+                <div className={styles.autocomplete}>
+                  <div className={styles.autocompleteHeader}>Suggestions</div>
+                  {searchSuggestions.map(s => (
+                    <button 
+                      key={s.id} 
+                      className={styles.suggestionItem}
+                      onClick={() => {
+                        setSearchQuery(s.title);
+                        setShowSuggestions(false);
+                      }}
+                    >
+                      <span>{s.title}</span>
+                      <span className="material-symbols-outlined" aria-hidden="true">north_west</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className={styles.headerActions}>
+              {isAdmin && (
+                <Button icon="add" iconPosition="left" onClick={() => handleOpenModal()}>
+                  Crear Nuevo
+                </Button>
+              )}
+              <div className={styles.avatar}>{getInitials(user?.name || '')}</div>
+              
+              {/* Mobile Sidebar Toggle */}
+              <button 
+                className={styles.sidebarToggle}
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                aria-label="Abrir menú lateral"
+              >
+                <span className="material-symbols-outlined" aria-hidden="true">
+                  {isSidebarOpen ? 'close' : 'menu'}
+                </span>
+              </button>
+            </div>
+          </header>
+
+          <section className={styles.content}>
+            {/* Filters */}
+            <div className={styles.filters}>
+              <span style={{display: 'flex', alignItems: 'center', gap: '0.25rem'}}>
+                <span className="material-symbols-outlined" aria-hidden="true" style={{fontSize: '1.25rem'}}>sort</span> 
+                Filtrar por:
+              </span>
+              <button 
+                className={`${styles.filterBtn} ${!selectedCategory ? styles.activeFilter : ''}`}
+                onClick={() => setSelectedCategory(null)}
+              >
+                All Products
+              </button>
+              {categories.map(cat => (
+                <button 
+                  key={cat}
+                  className={`${styles.filterBtn} ${selectedCategory === cat ? styles.activeFilter : ''}`}
+                  onClick={() => setSelectedCategory(cat)}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+
+            {/* Product Grid */}
+            <div className={styles.grid}>
+              {filteredProducts.map(product => (
+                <div key={product.id} className={styles.card}>
+                  {isAdmin && (
+                    <div className={styles.cardActions}>
+                      <button className={styles.actionBtn} onClick={() => handleOpenModal(product)} aria-label="Editar producto">
+                        <span className="material-symbols-outlined" aria-hidden="true">edit</span>
+                      </button>
+                      <button className={`${styles.actionBtn} ${styles.deleteBtn}`} onClick={() => handleDelete(product.id)} aria-label="Eliminar producto">
+                        <span className="material-symbols-outlined" aria-hidden="true">delete</span>
+                      </button>
+                    </div>
+                  )}
+                  
+                  <div className={styles.imageWrapper}>
+                    <img src={product.image} alt={product.description} />
+                  </div>
+                  
+                  <div className={styles.cardInfo}>
+                    <div className={styles.cardHeader}>
+                      <h2>{product.title}</h2>
+                    </div>
+                    <p className={styles.description}>{product.description}</p>
+                    <div className={styles.tags}>
+                      {product.ingredients.map(ing => (
+                        <span key={ing} className={styles.tag}>{ing}</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {filteredProducts.length === 0 && (
+              <div className={styles.emptyState}>
+                <span className="material-symbols-outlined" aria-hidden="true">search_off</span>
+                <p>No se encontraron productos.</p>
+              </div>
+            )}
+          </section>
+        </main>
+      </div>
+
+      {/* Modal CRUD */}
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)}
+        title={editingProduct.id ? "Editar Producto" : "Crear Producto"}
+        subtitle={editingProduct.id ? `ID: #${editingProduct.id}` : "Nuevo Ingreso"}
+        footer={
+          <>
+            <Button variant="outline" fullWidth onClick={() => setIsModalOpen(false)}>Descartar</Button>
+            <Button variant="primary" fullWidth onClick={handleSaveProduct}>Guardar Cambios</Button>
+          </>
+        }
+      >
+        <div className={styles.formGroup}>
+          <Input 
+            label="Product Title" 
+            value={editingProduct.title || ''} 
+            onChange={e => setEditingProduct({...editingProduct, title: e.target.value})}
+            validateMinLength={3}
+          />
+          <Input 
+            label="Image URL" 
+            icon="link"
+            value={editingProduct.image || ''} 
+            onChange={e => setEditingProduct({...editingProduct, image: e.target.value})}
+          />
+          
+          <div className={styles.inputGroup}>
+            <label>Description</label>
+            <textarea 
+              rows={4} 
+              value={editingProduct.description || ''}
+              onChange={e => setEditingProduct({...editingProduct, description: e.target.value})}
+              className={styles.textarea}
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label>Ingredients</label>
+            <div className={styles.ingredientTags}>
+              {editingProduct.ingredients?.map(ing => (
+                <div key={ing} className={styles.ingredientTag}>
+                  {ing}
+                  <button aria-label="Eliminar ingrediente" onClick={() => handleRemoveIngredient(ing)} style={{background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', marginLeft: '0.5rem', color: 'inherit'}}>
+                    <span className="material-symbols-outlined" aria-hidden="true">close</span>
+                  </button>
+                </div>
+              ))}
+            </div>
+            <div className={styles.addIngredientWrapper}>
+              <input 
+                type="text" 
+                placeholder="Add ingredient..." 
+                value={newIngredient}
+                onChange={e => setNewIngredient(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleAddIngredient()}
+                className={styles.ingredientInput}
+              />
+              <button className={styles.addIngredientBtn} onClick={handleAddIngredient}>Add</button>
+            </div>
+          </div>
+
+
+        </div>
+      </Modal>
+    </>
+  );
+};

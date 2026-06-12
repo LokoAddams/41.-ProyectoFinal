@@ -1,0 +1,47 @@
+@use '../../styles/variables' as *;
+
+.main {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-background);
+  padding-top: 5rem; // Espacio para el navbar
+}
+
+.container {
+  max-width: $container-max-width;
+  margin: 0 auto;
+  padding: $margin-mobile;
+  text-align: center;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.title {
+  font-family: $font-family-headline;
+  font-size: 8rem;
+  line-height: 1;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.subtitle {
+  font-family: $font-family-headline;
+  font-size: $font-size-headline-md;
+  color: var(--color-on-background);
+  margin: 0;
+}
+
+.text {
+  font-size: $font-size-body-lg;
+  color: var(--color-on-surface-variant);
+  margin-bottom: 2rem;
+}

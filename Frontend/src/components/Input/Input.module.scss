@@ -1,0 +1,101 @@
+@use '../../styles/variables' as *;
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.labelWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.label {
+  font-family: $font-family-body;
+  font-size: $font-size-label-md;
+  font-weight: 600;
+  color: var(--color-on-surface-variant);
+  letter-spacing: 0.05em;
+}
+
+.forgotLink {
+  font-family: $font-family-body;
+  font-size: $font-size-label-sm;
+  color: var(--color-on-surface-variant);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+}
+
+.inputContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  &.hasError {
+    .input {
+      border: 2px solid var(--color-error);
+      padding-right: 3rem; // Espacio para el ícono
+      
+      &:focus {
+        box-shadow: none;
+      }
+    }
+
+    .icon {
+      color: var(--color-error);
+    }
+  }
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: $border-radius-lg;
+  font-family: $font-family-body;
+  font-size: $font-size-body-md;
+  color: var(--color-on-surface);
+  transition: all 0.2s ease;
+  outline: none;
+
+  &::placeholder {
+    color: rgba($color-outline, 0.5);
+  }
+
+  &:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 1px var(--color-primary);
+  }
+}
+
+.icon {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba($color-on-surface-variant, 0.4);
+  pointer-events: none;
+}
+
+.errorMessage {
+  font-family: $font-family-body;
+  font-size: $font-size-label-sm;
+  color: var(--color-error);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+.errorIcon {
+  font-size: 14px;
+}

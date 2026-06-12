@@ -1,0 +1,104 @@
+@use '../../styles/variables' as *;
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: $border-radius-lg;
+  font-family: $font-family-body;
+  font-size: $font-size-label-md;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease-in-out;
+  line-height: 1;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &.fullWidth {
+    width: 100%;
+  }
+
+  // Variants
+  &.primary {
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+    
+    &:active:not(:disabled) {
+      transform: translateY(0);
+      transform: scale(0.98);
+    }
+  }
+
+  &.secondary {
+    background-color: var(--color-primary-container);
+    color: var(--color-on-primary-container);
+
+    &:hover:not(:disabled) {
+      opacity: 0.9;
+    }
+  }
+
+  &.outline {
+    background-color: transparent;
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+
+    &:hover:not(:disabled) {
+      background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
+    }
+  }
+
+  &.ghost {
+    background-color: transparent;
+    color: var(--color-on-surface-variant);
+
+    &:hover:not(:disabled) {
+      color: var(--color-primary);
+      background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
+    }
+  }
+
+  &.danger {
+    background-color: transparent;
+    color: var(--color-error);
+    border: 1px solid var(--color-outline-variant);
+    
+    &:hover:not(:disabled) {
+      background-color: var(--color-error);
+      color: var(--color-on-error);
+      border-color: var(--color-error);
+    }
+  }
+
+  .iconLeft, .iconRight {
+    font-size: 1.2em;
+  }
+
+  .iconRight {
+    transition: transform 0.2s ease;
+  }
+  
+  &:hover .iconRight {
+    transform: translateX(4px);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
