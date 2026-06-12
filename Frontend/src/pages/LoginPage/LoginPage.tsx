@@ -30,7 +30,8 @@ export const LoginPage = () => {
       loginState(res.user, res.token);
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Error al iniciar sesión');
+      const serverMsg = err.response?.data?.message || err.response?.data;
+      setError(typeof serverMsg === 'string' ? serverMsg : 'Correo o contraseña incorrectos. Inténtalo de nuevo.');
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +64,12 @@ export const LoginPage = () => {
               <div className={styles.glassAccent}></div>
               
               <form onSubmit={handleSubmit} className={styles.form}>
-                {error && <div className={styles.globalError}>{error}</div>}
+                {error && (
+                  <div className={styles.globalError}>
+                    <span className={`material-symbols-outlined ${styles.errorIcon}`} aria-hidden="true">error</span>
+                    <span>{error}</span>
+                  </div>
+                )}
                 
                 <Input 
                   label="Correo Electrónico"
@@ -93,6 +99,7 @@ export const LoginPage = () => {
                   fullWidth 
                   icon="arrow_forward" 
                   isLoading={isLoading}
+                  isDisabled={!email || !password}
                   className={styles.submitBtn}
                 >
                   Entrar

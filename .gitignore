@@ -21,3 +21,6 @@ target/
 *.war
 *.ear
 .mvn/
+src.7z
+deploy.txt
+github.txt

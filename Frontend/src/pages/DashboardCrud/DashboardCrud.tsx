@@ -341,7 +341,7 @@ export const DashboardCrud = () => {
         footer={
           <>
             <Button variant="outline" fullWidth onClick={() => setIsModalOpen(false)}>Descartar</Button>
-            <Button variant="primary" fullWidth onClick={handleSaveProduct}>Guardar Cambios</Button>
+            <Button variant="primary" fullWidth onClick={handleSaveProduct} isDisabled={Object.keys(formErrors).length > 0}>Guardar Cambios</Button>
           </>
         }
       >

@@ -7,6 +7,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: string;
   iconPosition?: 'left' | 'right';
   isLoading?: boolean;
+  isDisabled?: boolean;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -16,13 +17,14 @@ export const Button: React.FC<ButtonProps> = ({
   icon,
   iconPosition = 'right',
   isLoading = false,
+  isDisabled = false,
   className = '',
   ...props
 }) => {
   const btnClass = `${styles.btn} ${styles[variant]} ${fullWidth ? styles.fullWidth : ''} ${className}`;
 
   return (
-    <button className={btnClass} disabled={isLoading || props.disabled} {...props}>
+    <button className={btnClass} disabled={isLoading || isDisabled || props.disabled} {...props}>
       {isLoading ? (
         <span className="material-symbols-outlined animate-spin" aria-hidden="true">refresh</span>
       ) : (
