@@ -1,1 +1,22 @@
-/.vscode
+# General
+.vscode/
+.idea/
+*.log
+
+# Frontend (Node / React / Vite)
+node_modules/
+dist/
+dist-ssr/
+*.local
+.env
+.env.*
+.env.*.local
+coverage/
+
+# Backend (Java Maven)
+target/
+*.class
+*.jar
+*.war
+*.ear
+.mvn/

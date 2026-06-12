@@ -1,8 +1,0 @@
-com\coffee\app\security\JwtAuthFilter.class
-com\coffee\app\controller\AuthController.class
-com\coffee\app\security\JwtUtil.class
-com\coffee\app\CoffeeApplication.class
-com\coffee\app\config\SecurityConfig.class
-com\coffee\app\controller\CoffeeController.class
-com\coffee\app\model\Coffee.class
-com\coffee\app\controller\AuthController$LoginRequest.class
