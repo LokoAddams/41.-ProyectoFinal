@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import type { User } from '../interfaces';
+import { authService } from '../services/authService';
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
   loginState: (user: User, token: string) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   isAuthenticated: boolean;
   isAdmin: boolean;
 }
@@ -16,21 +17,33 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
-  // Inicializar estado desde LocalStorage al cargar la aplicación
-  useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
+  const clearAuthData = () => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  };
 
-    if (storedToken && storedUser) {
-      try {
-        setToken(storedToken);
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        console.error("Error al parsear el usuario desde localStorage", error);
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+  // Inicializar estado desde LocalStorage y verificar sesión en el backend
+  useEffect(() => {
+    const initializeAuth = async () => {
+      const storedToken = localStorage.getItem('token');
+
+      if (storedToken) {
+        setToken(storedToken); // Seteamos el token inicial para que la app sepa que estamos intentando autenticar
+        try {
+          // Usamos el verifySession que acabamos de crear en authService
+          const verifiedUser = await authService.verifySession();
+          setUser(verifiedUser);
+          localStorage.setItem('user', JSON.stringify(verifiedUser));
+        } catch (error) {
+          console.error("Error al verificar la sesión:", error);
+          clearAuthData();
+        }
       }
-    }
+    };
+
+    initializeAuth();
   }, []);
 
   const loginState = (userData: User, jwtToken: string) => {
@@ -40,15 +53,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     localStorage.setItem('user', JSON.stringify(userData));
   };
 
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+  const logout = async () => {
+    try {
+      if (token) {
+        await authService.logout();
+      }
+    } catch (error) {
+      console.error("Error en logout del backend:", error);
+    } finally {
+      clearAuthData();
+    }
   };
 
   const isAuthenticated = !!token;
-  const isAdmin = user?.role === 'Admin';
+  const isAdmin = user?.role === 'Admin' || user?.role === 'ADMIN';
 
   return (
     <AuthContext.Provider value={{ user, token, loginState, logout, isAuthenticated, isAdmin }}>

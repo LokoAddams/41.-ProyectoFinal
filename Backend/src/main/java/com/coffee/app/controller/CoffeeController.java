@@ -5,6 +5,7 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -168,14 +169,14 @@ public class CoffeeController {
     }
 
     @PostMapping
-    public ResponseEntity<Coffee> createCoffee(@RequestBody Coffee coffee) {
+    public ResponseEntity<Coffee> createCoffee(@Valid @RequestBody Coffee coffee) {
         coffee.setId(counter.incrementAndGet());
         coffees.add(coffee);
         return ResponseEntity.status(HttpStatus.CREATED).body(coffee);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Coffee> updateCoffee(@PathVariable Long id, @RequestBody Coffee coffeeDetails) {
+    public ResponseEntity<Coffee> updateCoffee(@PathVariable Long id, @Valid @RequestBody Coffee coffeeDetails) {
         for (int i = 0; i < coffees.size(); i++) {
             Coffee coffee = coffees.get(i);
             if (coffee.getId().equals(id)) {

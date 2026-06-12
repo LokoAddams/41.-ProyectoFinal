@@ -65,4 +65,48 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
     }
+
+    @GetMapping("/verify")
+    public ResponseEntity<?> verifySession() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            String email;
+            String role = "USER";
+
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof UserDetails) {
+                UserDetails userDetails = (UserDetails) principal;
+                email = userDetails.getUsername();
+                role = userDetails.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .map(r -> r.replace("ROLE_", ""))
+                        .findFirst()
+                        .orElse("USER");
+            } else {
+                email = principal.toString();
+            }
+
+            Map<String, Object> userResponse = new HashMap<>();
+            userResponse.put("email", email);
+            userResponse.put("role", role);
+
+            return ResponseEntity.ok(userResponse);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        // En JWT el token es stateless, por lo que el logout se maneja en el cliente
+        // eliminando el token. Este endpoint se proporciona para confirmar la acción
+        // o por si en el futuro se implementa una lista negra de tokens.
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Logout exitoso");
+        return ResponseEntity.ok(response);
+    }
 }

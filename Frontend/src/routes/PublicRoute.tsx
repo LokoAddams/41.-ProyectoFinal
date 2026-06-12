@@ -1,10 +1,11 @@
 import { Navigate } from "react-router-dom";
-import { isAuthenticated } from "../utils/auth";
+import { useAuth } from "../context/AuthContext";
 
 interface Props {
   children: JSX.Element;
 }
 
 export default function PublicRoute({ children }: Props) {
-  return !isAuthenticated() ? children : <Navigate to="/dashboard" replace />;
+  const { isAuthenticated } = useAuth();
+  return !isAuthenticated ? children : <Navigate to="/dashboard" replace />;
 }

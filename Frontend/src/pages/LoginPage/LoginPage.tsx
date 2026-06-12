@@ -99,16 +99,7 @@ export const LoginPage = () => {
                 </Button>
               </form>
 
-              <div className={styles.divider}>
-                <div className={styles.dividerLine}></div>
-                <span className={styles.dividerText}>O CONTINÚA CON</span>
-              </div>
 
-              <div className={styles.footerLink}>
-                <p>
-                  ¿No tienes una cuenta? <a href="#">Registrarse</a>
-                </p>
-              </div>
             </div>
 
             <div className={styles.legalLinks}>

@@ -33,7 +33,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
   };
 
   React.useEffect(() => {
-    if (error !== undefined) setInternalError(error);
+    setInternalError(error);
   }, [error]);
 
   const hasError = !!internalError;

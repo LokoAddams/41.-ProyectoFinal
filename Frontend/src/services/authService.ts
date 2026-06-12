@@ -16,5 +16,31 @@ export const authService = {
     } catch (error) {
       throw error;
     }
+  },
+
+  /**
+   * Verifica la sesión actual del usuario mediante el token JWT.
+   * @returns Datos del usuario validado.
+   */
+  verifySession: async (): Promise<User> => {
+    try {
+      const response = await api.get<User>('/auth/verify');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * Cierra la sesión del usuario en el sistema.
+   */
+  logout: async (): Promise<void> => {
+    try {
+      // Ajusta la ruta a la que corresponda en tu backend
+      const response = await api.post('/auth/logout');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   }
 };

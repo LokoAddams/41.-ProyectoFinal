@@ -54,10 +54,9 @@ export const Navbar = () => {
         
         {/* Desktop Nav */}
         <div className={styles.desktopLinks}>
-          <a href="#grains" className={styles.link}>Menu</a>
-          <a href="#subscriptions" className={styles.link}>Subscriptions</a>
-          <a href="#roastery" className={styles.link}>Roastery</a>
-          <a href="#story" className={styles.link}>Our Story</a>
+          <a href="#inicio" className={styles.link}>Inicio</a>
+          <a href="#grains" className={styles.link}>Nuestros Granos</a>
+          <a href="#testimonials" className={styles.link}>Lo que dicen nuestros expertos</a>
         </div>
 
         <div className={styles.actions}>
@@ -76,9 +75,7 @@ export const Navbar = () => {
 
           {/* User Icons */}
           <div className={styles.userIcons}>
-            <button aria-label="Abrir bolsa de compras" style={{background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'inherit', display: 'flex', alignItems: 'center'}}>
-              <span className="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
-            </button>
+              {/* Removed shopping bag */}
             {isAuthenticated ? (
                <Link to="/dashboard" className={styles.iconBtnLink} aria-label="Ir al dashboard">
                   <span className="material-symbols-outlined" aria-hidden="true">person</span>
@@ -106,10 +103,9 @@ export const Navbar = () => {
       {/* Mobile Menu Content */}
       {isMenuOpen && (
         <div className={styles.mobileMenu}>
-          <a href="#grains" className={styles.mobileLink} onClick={() => setIsMenuOpen(false)}>Menu</a>
-          <a href="#subscriptions" className={styles.mobileLink} onClick={() => setIsMenuOpen(false)}>Subscriptions</a>
-          <a href="#roastery" className={styles.mobileLink} onClick={() => setIsMenuOpen(false)}>Roastery</a>
-          <a href="#story" className={styles.mobileLink} onClick={() => setIsMenuOpen(false)}>Our Story</a>
+          <a href="#inicio" className={styles.mobileLink} onClick={() => setIsMenuOpen(false)}>Inicio</a>
+          <a href="#grains" className={styles.mobileLink} onClick={() => setIsMenuOpen(false)}>Nuestros Granos</a>
+          <a href="#testimonials" className={styles.mobileLink} onClick={() => setIsMenuOpen(false)}>Lo que dicen nuestros expertos</a>
           <div className={styles.mobileAuth}>
             <Button variant="primary" fullWidth onClick={() => { handleAuthAction(); setIsMenuOpen(false); }}>
               {isAuthenticated ? 'Cerrar Sesión' : 'Iniciar Sesión'}

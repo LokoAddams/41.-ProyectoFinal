@@ -38,6 +38,7 @@
   max-width: $container-max-width;
   margin: 0 auto;
   padding: 0 $margin-mobile;
+  transform: translateY(-100px);
 
   @include respond-to(md) {
     padding: 0 $margin-desktop;
@@ -142,6 +143,7 @@
   position: absolute;
   bottom: 0;
   left: 0;
+  padding: 2rem;
   color: #ffffff; // Siempre blanco para el texto sobre la imagen
 }
 
@@ -396,11 +398,11 @@
   }
 }
 
-// Footer
 .footer {
-  background-color: var(--color-primary);
-  color: var(--color-on-primary);
+  background-color: var(--color-background);
+  color: var(--color-on-background);
   padding: 3rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .footerContent {
@@ -423,7 +425,7 @@
   max-width: 20rem;
 
   p {
-    color: rgba($color-on-primary, 0.8);
+    color: var(--color-on-surface-variant);
     margin-top: 1rem;
   }
 }
@@ -431,7 +433,7 @@
 .footerLogo {
   font-family: $font-family-headline;
   font-size: $font-size-headline-sm;
-  color: var(--color-on-primary);
+  color: var(--color-primary);
 }
 
 .footerLinksGrid {
@@ -459,11 +461,11 @@
   }
 
   a {
-    color: rgba($color-on-primary, 0.8);
-    transition: opacity 0.2s;
+    color: var(--color-on-surface-variant);
+    transition: color 0.2s;
 
     &:hover {
-      opacity: 1;
+      color: var(--color-primary);
     }
   }
 }
@@ -486,12 +488,12 @@
   max-width: $container-max-width;
   margin: 3rem auto 0 auto;
   padding: 2rem $margin-mobile 0;
-  border-top: 1px solid rgba($color-on-primary, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: $font-size-label-sm;
-  color: rgba($color-on-primary, 0.6);
+  color: var(--color-on-surface-variant);
 
   @include respond-to(md) {
     padding: 2rem $margin-desktop 0;
@@ -579,6 +581,12 @@
   background-color: var(--color-surface-container-low);
   border-radius: $border-radius-xl;
   padding: 2.5rem;
+  animation: slideIn 0.4s ease-out;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 .stars {
