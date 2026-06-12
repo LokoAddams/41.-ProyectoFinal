@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { api as axios } from '../../services/api';
 import { Helmet } from 'react-helmet-async';
 import styles from './DashboardCrud.module.scss';

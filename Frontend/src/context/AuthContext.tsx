@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
 import type { User } from '../interfaces';
 import { authService } from '../services/authService';
 
@@ -66,7 +67,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const isAuthenticated = !!token;
-  const isAdmin = user?.role === 'Admin' || user?.role === 'ADMIN';
+  const isAdmin = user?.role === 'Admin';
 
   return (
     <AuthContext.Provider value={{ user, token, loginState, logout, isAuthenticated, isAdmin }}>
